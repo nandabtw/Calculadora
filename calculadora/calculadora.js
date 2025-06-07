@@ -7,9 +7,20 @@ let expressaoCompleta = '';
 let resultadoCalculado = false;
 let novoNumeroAposOperador = false;
 
+// Variáveis para histórico e contagem de teclas
+let historico = [];
+let contadorTeclas = {
+    '0': 0, '1': 0, '2': 0, '3': 0, '4': 0,
+    '5': 0, '6': 0, '7': 0, '8': 0, '9': 0
+};
+let relatorioVisivel = false;
+
 // Função executada quando o DOM estiver carregado
 document.addEventListener('DOMContentLoaded', function() {
     const display = document.getElementById('display');
+    const conteudoHistorico = document.getElementById('conteudo-historico');
+    const relatorio = document.getElementById('relatorio');
+    const relatorioTeclas = document.getElementById('relatorio-teclas');
 
     // Configuração dos botões numéricos
     document.getElementById('btn-0').addEventListener('click', function() { adicionarNumero('0'); });
@@ -34,6 +45,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Configuração dos botões de ação
     document.getElementById('btn-igual').addEventListener('click', calcular);
     document.getElementById('btn-limpar').addEventListener('click', limpar);
+    document.getElementById('btn-limpar-entrada').addEventListener('click', limparEntrada);
     document.getElementById('btn-apagar').addEventListener('click', apagar);
 
     // Adicionar suporte a teclado
@@ -52,8 +64,64 @@ document.addEventListener('DOMContentLoaded', function() {
             limpar();
         } else if (event.key === 'Backspace') {
             apagar();
+        } else if (event.key === 'Delete') {
+            limparEntrada();
+        } else if (event.key === 'h' || event.key === 'H') {
+            toggleRelatorio();
         }
     });
+
+    // Função para alternar a visibilidade do relatório
+    function toggleRelatorio() {
+        relatorioVisivel = !relatorioVisivel;
+        if (relatorioVisivel) {
+            atualizarRelatorio();
+            relatorio.style.display = 'block';
+        } else {
+            relatorio.style.display = 'none';
+        }
+    }
+
+    // Função para atualizar o relatório de uso das teclas
+    function atualizarRelatorio() {
+        let html = '';
+        for (let i = 0; i <= 9; i++) {
+            html += `<div class="relatorio-item">
+                        <span>Tecla ${i}:</span>
+                        <span>${contadorTeclas[i.toString()]} vezes</span>
+                     </div>`;
+        }
+        relatorioTeclas.innerHTML = html;
+    }
+
+    // Função para atualizar o histórico
+    function atualizarHistorico() {
+        if (historico.length === 0) {
+            conteudoHistorico.innerHTML = '<p class="mensagem-historico">Nenhuma operação realizada.</p>';
+            return;
+        }
+
+        let html = '';
+        historico.forEach(item => {
+            html += `<div class="operacao-historico">
+                        <div class="expressao">${item.expressao}</div>
+                        <div class="resultado">${item.resultado}</div>
+                     </div>`;
+        });
+        conteudoHistorico.innerHTML = html;
+        
+        // Rolar para o final do histórico
+        conteudoHistorico.scrollTop = conteudoHistorico.scrollHeight;
+    }
+
+    // Função para adicionar uma operação ao histórico
+    function adicionarAoHistorico(expressao, resultado) {
+        historico.push({
+            expressao: expressao,
+            resultado: resultado
+        });
+        atualizarHistorico();
+    }
 
     // Função para atualizar o display
     function atualizarDisplay() {
@@ -62,6 +130,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Função para adicionar um número ao display
     function adicionarNumero(numero) {
+        // Incrementar o contador de teclas numéricas
+        if (numero >= '0' && numero <= '9') {
+            contadorTeclas[numero]++;
+        }
+
         if (resultadoCalculado) {
             valorAtual = numero;
             expressaoCompleta = numero;
@@ -146,6 +219,7 @@ document.addEventListener('DOMContentLoaded', function() {
         let resultado;
         const anterior = parseFloat(valorAnterior);
         const atual = parseFloat(valorAtual);
+        const expressaoParaHistorico = expressaoCompleta;
 
         switch (operadorPendente) {
             case '+':
@@ -178,6 +252,9 @@ document.addEventListener('DOMContentLoaded', function() {
             valorAtual = parseFloat(resultado).toExponential(6);
         }
         
+        // Adicionar ao histórico
+        adicionarAoHistorico(expressaoParaHistorico, valorAtual);
+        
         operadorPendente = null;
         valorAnterior = null;
         expressaoCompleta = '';
@@ -186,7 +263,7 @@ document.addEventListener('DOMContentLoaded', function() {
         atualizarDisplay();
     }
 
-    // Função para limpar a calculadora
+    // Função para limpar a calculadora e o histórico
     function limpar() {
         valorAtual = '0';
         operadorPendente = null;
@@ -195,6 +272,25 @@ document.addEventListener('DOMContentLoaded', function() {
         expressaoCompleta = '';
         resultadoCalculado = false;
         novoNumeroAposOperador = false;
+        historico = [];
+        atualizarHistorico();
+        
+        atualizarDisplay();
+    }
+
+    // Função para limpar apenas a entrada atual (CE)
+    function limparEntrada() {
+        if (operadorPendente) {
+            valorAtual = '0';
+            let parteInicial = expressaoCompleta.substring(0, expressaoCompleta.lastIndexOf(getOperadorVisual(operadorPendente)) + 1);
+            expressaoCompleta = parteInicial;
+            novoNumeroAposOperador = true;
+        } else {
+            valorAtual = '0';
+            expressaoCompleta = '';
+        }
+        
+        resultadoCalculado = false;
         atualizarDisplay();
     }
 
@@ -235,9 +331,15 @@ document.addEventListener('DOMContentLoaded', function() {
         atualizarDisplay();
     }
 
+    // Inicializar o histórico
+    atualizarHistorico();
+
+    // Expor funções para o escopo global
     window.adicionarNumero = adicionarNumero;
     window.adicionarOperador = adicionarOperador;
     window.calcular = calcular;
     window.limpar = limpar;
+    window.limparEntrada = limparEntrada;
     window.apagar = apagar;
+    window.toggleRelatorio = toggleRelatorio;
 });
