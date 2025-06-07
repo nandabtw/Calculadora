@@ -3,37 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora</title>
+    <title>Calculadora com Histórico</title>
     <link rel="stylesheet" href="estilo.css">
 </head>
 <body>
-    <div class="calculadora">
-        <h1 class="titulo">Calculadora</h1>
-        <div class="display" id="display">0</div>
-        <div class="botoes">
-            <button class="limpar" id="btn-limpar">C</button>
-            <button class="operador" id="btn-apagar">⌫</button>
-            <button class="operador" id="btn-porcentagem">%</button>
-            <button class="operador" id="btn-divisao">/</button>
-            
-            <button id="btn-7">7</button>
-            <button id="btn-8">8</button>
-            <button id="btn-9">9</button>
-            <button class="operador" id="btn-multiplicacao">×</button>
-            
-            <button id="btn-4">4</button>
-            <button id="btn-5">5</button>
-            <button id="btn-6">6</button>
-            <button class="operador" id="btn-subtracao">-</button>
-            
-            <button id="btn-1">1</button>
-            <button id="btn-2">2</button>
-            <button id="btn-3">3</button>
-            <button class="operador" id="btn-adicao">+</button>
-            
-            <button id="btn-0">0</button>
-            <button id="btn-ponto">.</button>
-            <button class="igual" id="btn-igual" style="grid-column: span 2;">=</button>
+    <div class="container">
+        <div class="calculadora">
+            <h1 class="titulo">Calculadora</h1>
+            <div class="display" id="display">0</div>
+            <div class="botoes">
+                <button class="limpar" id="btn-limpar">C</button>
+                <button class="limpar-entrada" id="btn-limpar-entrada">CE</button>
+                <button class="operador" id="btn-apagar">⌫</button>
+                <button class="operador" id="btn-porcentagem">%</button>
+                
+                <button id="btn-7">7</button>
+                <button id="btn-8">8</button>
+                <button id="btn-9">9</button>
+                <button class="operador" id="btn-divisao">/</button>
+                
+                <button id="btn-4">4</button>
+                <button id="btn-5">5</button>
+                <button id="btn-6">6</button>
+                <button class="operador" id="btn-multiplicacao">×</button>
+                
+                <button id="btn-1">1</button>
+                <button id="btn-2">2</button>
+                <button id="btn-3">3</button>
+                <button class="operador" id="btn-subtracao">-</button>
+                
+                <button id="btn-0">0</button>
+                <button id="btn-ponto">.</button>
+                <button class="operador" id="btn-adicao">+</button>
+                <button class="igual" id="btn-igual">=</button>
+
+                <p class="dica">Pressione 'H' para exibir/ocultar o relatório</p>
+            </div>
+        </div>
+
+        <div class="historico">
+            <h2 class="titulo-historico">Histórico</h2>
+            <div class="conteudo-historico" id="conteudo-historico">
+                <p class="mensagem-historico">Nenhuma operação realizada.</p>
+            </div>
+            <div class="relatorio" id="relatorio">
+                <h3>Relatório de teclas</h3>
+                <div id="relatorio-teclas"></div>
+            </div>
         </div>
     </div>
 
